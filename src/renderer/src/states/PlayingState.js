@@ -9,17 +9,19 @@ const soldier_tileset_path = '../assets/Texture/sprites/warrior_m.png'; // Ruta 
 
 const soldier_tileset = new Image();
 
-import { maps } from '../maps/map1';
+import { maps, mapObjects } from '../maps/map1';
 import { transitions } from '../maps/transitions';
-import { tiles } from '../maps/tiles.js'
+import { tiles, objects } from '../maps/tiles.js'
 
 soldier_tileset.src = soldier_tileset_path;
 // let currentMap = maps.map1;
 
 let map = maps.map1;
+let mapObject = mapObjects.map1;
 
 function changeMap(newMap, newPlayerX, newPlayerY) {
     map = maps[newMap];
+    mapObject = mapObjects[newMap];
     player.x = newPlayerX * TILE_SIZE;
     player.y = newPlayerY * TILE_SIZE;
 }
@@ -39,7 +41,7 @@ function handleTransition() {
 // Datos del jugador
 const player = {
     x: 1 * TILE_SIZE,
-    y: 1 * TILE_SIZE,
+    y: 2 * TILE_SIZE,
     width: TILE_SIZE,
     height: TILE_SIZE,
     speed: 4,
@@ -51,27 +53,40 @@ const player = {
     spriteHeight: PLAYER_TILE_SIZE, // Alto de cada cuadro
     spriteColumns: 3, // Número de columnas en el spritesheet
     spriteRows: 1, // Número de filas en el spritesheet
-    direction: 0
+    direction: 1
 };
 
 let keys = {};
 
 // Función para dibujar el mapa
 function drawMap(ctx) {
-    for (let y = 0; y < map.length; y++) {
+    for (let y = 0; y < map.length; y++) { //loop for ground layer
         for (let x = 0; x < map[y].length; x++) {
             let tile = tiles[`${map[y][x]}`];
-            if(tile){
-            ctx.drawImage(
-                tile.img,
-                tile.x, tile.y, TILE_SIZE, TILE_SIZE, // Parte del tileset a dibujar
-                x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE // Donde dibujar en el canvas
-            )
-        }else{
+            if (tile) {
+                ctx.drawImage(
+                    tile.img,
+                    tile.x, tile.y, TILE_SIZE, TILE_SIZE, // Parte del tileset a dibujar
+                    x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE // Donde dibujar en el canvas
+                )
+            } else {
                 ctx.fillStyle = "pink";
                 ctx.fillRect(
                     x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE,
                     32, 32
+                )
+            }
+        }
+    }
+    if (!mapObject) return
+    for (let y = 0; y < mapObject.length; y++) { //loop for objects layer
+        for (let x = 0; x < mapObject[y].length; x++) {
+            let tile = objects[`${mapObject[y][x]}`];
+            if (tile) {
+                ctx.drawImage(
+                    tile.img,
+                    tile.x, tile.y, TILE_SIZE, TILE_SIZE, // Parte del tileset a dibujar
+                    x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE // Donde dibujar en el canvas
                 )
             }
         }
@@ -158,17 +173,27 @@ function handleCollisions(newX, newY) {
     const top = Math.floor(newY / TILE_SIZE);
     const bottom = Math.floor((newY + player.height - 1) / TILE_SIZE); // Ajustar por el borde inferior
 
+    // Obtener las dimensiones del mapa actual
+    const mapHeight = map.length;
+    const mapWidth = map[0].length;
+
     // Comprobar las colisiones
     for (let y = top; y <= bottom; y++) {
+        // Asegurarse de que y esté dentro de los límites del mapa
+        if (y < 0 || y >= mapHeight) {
+            return { x: player.x, y: player.y };
+        }
         for (let x = left; x <= right; x++) {
-            if (map[y] && map[y][x] === 1) {
-                // Colisión detectada, revertir a la posición original
+            // Asegurarse de que x esté dentro de los límites del mapa
+            if (x < 0 || x >= mapWidth) {
                 return { x: player.x, y: player.y };
-            } else if (map[y] && map[y][x] === "!") {
-                // alert("cambio");
-                // console.log("Cambio a mapa --> ", mapLinks["!"]);
-                // map = mapLinks["!"];
-                // mapLinks = map2.links;
+            }
+
+            // Comprobar si el tile es colisionable
+            if (tiles[`${map[y][x]}`] && tiles[`${map[y][x]}`].coll) {
+                return { x: player.x, y: player.y };
+            }else if(objects[`${mapObject[y][x]}`] && objects[`${mapObject[y][x]}`].coll){
+                return { x: player.x, y: player.y };
             }
         }
     }
