@@ -4,6 +4,7 @@ import StateMachine from './class/StateMachine.js';
 import createMainMenu from './states/MainMenuState.js';
 import createPlayingState from './states/PlayingState.js'
 import createPauseState from './states/PauseState.js';
+import createFightState from './states/FightState.js';
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -13,10 +14,12 @@ const stateMachine = new StateMachine('MainMenu');
 const MainMenu = createMainMenu(stateMachine);
 const PlayingState = createPlayingState(stateMachine);
 const PauseState = createPauseState(stateMachine);
+const FightState = createFightState(stateMachine);
 
 stateMachine.addState('MainMenu', MainMenu);
 stateMachine.addState('Playing', PlayingState);
 stateMachine.addState('Paused', PauseState);
+stateMachine.addState('Fight', FightState);
 
 const FPS = 30;
 const FRAME_DURATION = 1000 / FPS;
