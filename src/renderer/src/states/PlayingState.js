@@ -16,8 +16,10 @@ import { tiles, objects } from '../maps/tiles.js'
 soldier_tileset.src = soldier_tileset_path;
 // let currentMap = maps.map1;
 
-let map = maps.map1;
-let mapObject = mapObjects.map1;
+// let map = maps.map1;
+// let mapObject = mapObjects.map1;
+let map = maps.map2;
+let mapObject = mapObjects.map2;
 
 function changeMap(newMap, newPlayerX, newPlayerY) {
     map = maps[newMap];
@@ -40,8 +42,10 @@ function handleTransition() {
 
 // Datos del jugador
 const player = {
-    x: 1 * TILE_SIZE,
-    y: 2 * TILE_SIZE,
+    // x: 1 * TILE_SIZE,
+    // y: 3 * TILE_SIZE,
+    x: 3 * TILE_SIZE,
+    y: 7 * TILE_SIZE,
     width: TILE_SIZE,
     height: TILE_SIZE,
     speed: 4,
@@ -112,97 +116,141 @@ function drawPlayer(ctx) {
 }
 
 // Función para actualizar la posición del jugador y manejar la animación
-function updatePlayer() {
-    let newX = player.x;
-    let newY = player.y;
+function updatePlayer(stateMachine) {
+    if (player.moving) {
+        player.moveProgress += player.speed / TILE_SIZE;
+        if (player.moveProgress >= 1) {
+            player.moveProgress = 1;
+            player.moving = false;
+            player.x = player.moveEndX;
+            player.y = player.moveEndY;
 
-    let moving = false;
+            const newPos = handleCollisionsBetween(player.prevX, player.prevY, player.x, player.y, stateMachine);
+            player.x = newPos.x;
+            player.y = newPos.y;
+            player.frameIndex = 0;
+        } else {
+            const prevX = player.x;
+            const prevY = player.y;
+            player.x = player.moveStartX + (player.moveEndX - player.moveStartX) * player.moveProgress;
+            player.y = player.moveStartY + (player.moveEndY - player.moveStartY) * player.moveProgress;
 
-    if (keys['z']) {
-        player.speed = 12;
+            const collisionPos = handleCollisionsBetween(prevX, prevY, player.x, player.y, stateMachine);
+            player.x = collisionPos.x;
+            player.y = collisionPos.y;
+        }
     } else {
-        player.speed = 4;
+        let moving = false;
+        let newX = player.x;
+        let newY = player.y;
+
+        if (keys['z']) {
+            player.speed = 12;
+        } else {
+            player.speed = 4;
+        }
+
+        if (keys['ArrowUp']) {
+            newY -= TILE_SIZE;
+            moving = true;
+            player.direction = 0;
+        }
+        if (keys['ArrowDown']) {
+            newY += TILE_SIZE;
+            moving = true;
+            player.direction = 2;
+        }
+        if (keys['ArrowLeft']) {
+            newX -= TILE_SIZE;
+            moving = true;
+            player.direction = 3;
+        }
+        if (keys['ArrowRight']) {
+            newX += TILE_SIZE;
+            moving = true;
+            player.direction = 1;
+        }
+
+        if (moving) {
+            player.moveStartX = player.x;
+            player.moveStartY = player.y;
+            player.moveEndX = newX;
+            player.moveEndY = newY;
+            player.moveProgress = 0;
+            player.moving = true;
+
+            player.prevX = player.x;
+            player.prevY = player.y;
+        }
     }
 
-    if (keys['ArrowUp']) {
-        newY -= player.speed;
-        moving = true;
-        player.direction = 0
-    }
-    if (keys['ArrowDown']) {
-        newY += player.speed;
-        moving = true;
-        player.direction = 2
-    }
-    if (keys['ArrowLeft']) {
-        newX -= player.speed;
-        moving = true;
-        player.direction = 3
-    }
-    if (keys['ArrowRight']) {
-        newX += player.speed;
-        moving = true;
-        player.direction = 1
-    }
-
-    // Manejo de colisiones
-    const newPos = handleCollisions(newX, newY);
-    player.x = newPos.x;
-    player.y = newPos.y;
-
-    // Manejo de la animación del sprite
-    if (moving) {
+    if (player.moving) {
         player.tickCount++;
         if (player.tickCount > player.frameSpeed) {
             player.tickCount = 0;
             player.frameIndex++;
             if (player.frameIndex >= player.spriteColumns) {
-                player.frameIndex = 0; // Reiniciar la animación
+                player.frameIndex = 0;
             }
         }
     } else {
-        player.frameIndex = 0; // Mostrar el primer cuadro si no se mueve
+        player.frameIndex = 0;
     }
 }
 
-// Función para manejar las colisiones
-function handleCollisions(newX, newY) {
-    // Determinar las coordenadas de los tiles que el jugador ocupará
-    const left = Math.floor(newX / TILE_SIZE);
-    const right = Math.floor((newX + player.width - 1) / TILE_SIZE); // Ajustar por el borde derecho
-    const top = Math.floor(newY / TILE_SIZE);
-    const bottom = Math.floor((newY + player.height - 1) / TILE_SIZE); // Ajustar por el borde inferior
 
-    // Obtener las dimensiones del mapa actual
+// Función para manejar las colisiones
+function handleCollisionsBetween(startX, startY, endX, endY, stateMachine) {
+    const left = Math.floor(Math.min(startX, endX) / TILE_SIZE);
+    const right = Math.ceil(Math.max(startX + player.width, endX + player.width) / TILE_SIZE);
+    const top = Math.floor(Math.min(startY, endY) / TILE_SIZE);
+    const bottom = Math.ceil(Math.max(startY + player.height, endY + player.height) / TILE_SIZE);
+
     const mapHeight = map.length;
     const mapWidth = map[0].length;
 
-    // Comprobar las colisiones
-    for (let y = top; y <= bottom; y++) {
-        // Asegurarse de que y esté dentro de los límites del mapa
+    for (let y = top; y < bottom; y++) {
         if (y < 0 || y >= mapHeight) {
-            return { x: player.x, y: player.y };
+            return { x: startX, y: startY }; // Fuera de los límites del mapa
         }
-        for (let x = left; x <= right; x++) {
-            // Asegurarse de que x esté dentro de los límites del mapa
+        for (let x = left; x < right; x++) {
             if (x < 0 || x >= mapWidth) {
-                return { x: player.x, y: player.y };
+                return { x: startX, y: startY }; // Fuera de los límites del mapa
             }
 
             // Comprobar si el tile es colisionable
             if (tiles[`${map[y][x]}`] && tiles[`${map[y][x]}`].coll) {
-                return { x: player.x, y: player.y };
-            }else if(objects[`${mapObject[y][x]}`] && objects[`${mapObject[y][x]}`].coll){
-                return { x: player.x, y: player.y };
+                return { x: startX, y: startY };
+            }
+
+            // Comprobar si el objeto es colisionable
+            if (objects[`${mapObject[y][x]}`] && objects[`${mapObject[y][x]}`].coll) {
+                return { x: startX, y: startY };
+            }
+
+            // Comprobar combates solo si el jugador está dentro del tile
+            if (objects[`${mapObject[y][x]}`] && objects[`${mapObject[y][x]}`].combat) {
+                const tileLeft = x * TILE_SIZE;
+                const tileRight = tileLeft + TILE_SIZE;
+                const tileTop = y * TILE_SIZE;
+                const tileBottom = tileTop + TILE_SIZE;
+
+                if (endX + player.width > tileLeft && startX < tileRight &&
+                    endY + player.height > tileTop && startY < tileBottom) {
+                    if (Math.random() < 0.1) { // Probabilidad de encuentro
+                        keys = {};
+                        stateMachine.changeState("Fight");
+                        return { x: startX, y: startY }; // Detener movimiento si inicia combate
+                    }
+                }
             }
         }
     }
 
-    // Si no hay colisión, retornar la nueva posición
-    return { x: newX, y: newY };
+    return { x: endX, y: endY };
 }
 
-// Función para manejar eventos de teclado
+
 function onKeyDown(e) {
     keys[e.key] = true;
 }
