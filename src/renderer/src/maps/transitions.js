@@ -28,5 +28,14 @@ export const transitions = {
         to: "map2",
         x: 1,
         y: 7
-    }
+    },
+    "r1r2": {
+        to: "ruta2",
+        x: 38,
+        y: 20
+    },
+    "r2r1": { 
+        "to": "ruta1", 
+        "x": 0, 
+        "y": 0 }
 }
