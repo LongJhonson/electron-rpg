@@ -15,7 +15,7 @@ const MainMenu = (stateMachine) => ({
   },
   onExit: () => {
     console.log('Exiting Main Menu State');
-    audioManagerInstance.stop()
+    // audioManagerInstance.stop()
     if (keydownHandler) {
       window.removeEventListener('keydown', keydownHandler);
       keydownHandler = null; // Limpia la referencia después de eliminar el listener
@@ -62,7 +62,7 @@ function selectMenuOption(index, stateMachine) {
       break;
     case 1:
       console.log('Settings selected');
-      audioManagerInstance.setVolume(0.5)
+      stateMachine.changeState("Settings");
       // Implementar lógica para configuración
       break;
     case 2:

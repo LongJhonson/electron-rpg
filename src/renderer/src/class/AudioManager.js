@@ -2,7 +2,8 @@
 
 class AudioManager {
     constructor() {
-        this.volume = 0.4;  // Volumen global
+        // this.volume = 0.4;  // Volumen global
+        this.volume = 0;  // Volumen global
         this.music = {
             "main_menu": new Audio('../assets/audio/main_menu.mp3'),
             "house": new Audio('../assets/audio/house.mp3'),
@@ -11,6 +12,10 @@ class AudioManager {
             "battle": new Audio("../assets/audio/battle.mp3")
         };
         this.currentAudio = null;
+    }
+
+    getVolume(){
+        return this.volume;
     }
 
     setVolume(newVolume) {
@@ -25,6 +30,10 @@ class AudioManager {
     }
 
     play(audioName) {
+        // Si el audio actual ya se está reproduciendo, no hacer nada
+        if (this.currentAudio === audioName) {
+            return;
+        }
         if (this.currentAudio) {
             this.music[this.currentAudio].volume = this.volume;
             this.music[this.currentAudio].pause();
