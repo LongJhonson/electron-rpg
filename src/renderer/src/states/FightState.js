@@ -1,5 +1,7 @@
 const keys = {}
 
+const audio = new Audio("../assets/audio/battle.mp3")
+
 const Combat = (stateMachine) => {
   let battleStarted = false;
   let enemy = null;
@@ -101,11 +103,13 @@ const Combat = (stateMachine) => {
           console.log('Entrando en el estado de combate');
           window.addEventListener('keydown', onKeyDown);
           window.addEventListener('keyup', onKeyUp);
+          audio.play();
       },
       onExit: () => {
           console.log('Saliendo del estado de combate');
           window.removeEventListener('keydown', onKeyDown);
           window.removeEventListener('keyup', onKeyUp);
+          audio.pause();
       },
       onUpdate: () => {
           updateCombat();
