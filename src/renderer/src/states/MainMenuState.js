@@ -1,18 +1,21 @@
 let selectedOptionIndex = 0;
 const menuOptions = ['Start Game', 'Settings', 'Exit'];
 let keydownHandler = null; // Variable para almacenar la referencia del handler
-const audio = new Audio("../assets/audio/main_menu.mp3");
+import audioManagerInstance from "../class/AudioManager";
+
+
 
 const MainMenu = (stateMachine) => ({
   onEnter: () => {
     console.log('Entering Main Menu State');
     keydownHandler = (e) => onMainMenuKeyDown(e, stateMachine);
     window.addEventListener('keydown', keydownHandler);
-    audio.play();
+    audioManagerInstance.play("main_menu")
+    // audio.play();
   },
   onExit: () => {
     console.log('Exiting Main Menu State');
-    audio.pause();
+    audioManagerInstance.stop()
     if (keydownHandler) {
       window.removeEventListener('keydown', keydownHandler);
       keydownHandler = null; // Limpia la referencia después de eliminar el listener
@@ -59,6 +62,7 @@ function selectMenuOption(index, stateMachine) {
       break;
     case 1:
       console.log('Settings selected');
+      audioManagerInstance.setVolume(0.5)
       // Implementar lógica para configuración
       break;
     case 2:

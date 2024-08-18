@@ -1,3 +1,8 @@
+import { maps, mapObjects, mapAudio } from '../maps/map1'
+import { transitions } from '../maps/transitions'
+import { tiles, objects } from '../maps/tiles.js'
+import audioManagerInstance from '../class/AudioManager.js'
+
 // Tamaño de cada tile en píxeles
 const TILE_SIZE = 32
 const PLAYER_TILE_SIZE = 32
@@ -8,20 +13,10 @@ const soldier_tileset_path = '../assets/Texture/sprites/warrior_m.png' // Ruta a
 const soldier_tileset = new Image()
 soldier_tileset.src = soldier_tileset_path
 
-import { maps, mapObjects, mapAudio } from '../maps/map1'
-import { transitions } from '../maps/transitions'
-import { tiles, objects } from '../maps/tiles.js'
 
 let map = maps.map1
 let mapObject = mapObjects.map1
 let currentMapName = 'map1';
-
-//audios
-const music = {
-  "house" : new Audio('../assets/audio/house.mp3'),
-  "town" : new Audio('../assets/audio/town.mp3'),
-  "forest" : new Audio('../assets/audio/3.mp3'),
-}
 
 // let map = maps.casa_test;
 // let mapObject = mapObjects.casa_test;
@@ -38,16 +33,8 @@ function changeMap(newMap, newPlayerX, newPlayerY) {
   player.prevY = player.y;
 
   // Cambiar la música según el nuevo mapa
-  const newAudio = mapAudio[`${newMap}`];
-  if (currentAudio && currentAudio !== newAudio) {
-    music[`${currentAudio}`].pause();
-    music[`${currentAudio}`].currentTime = 0;  // Reinicia el audio anterior
-  }
-  
-  currentAudio = newAudio;
-  if(music[`${currentAudio}`]){
-  music[`${currentAudio}`].play();
-  }
+  audioManagerInstance.stop();
+  audioManagerInstance.play(mapAudio[currentMapName]);
 }
 
 let transitionCooldown = 0;
@@ -341,20 +328,14 @@ const Playing = (stateMachine) => ({
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
 
-     // Detener cualquier audio anterior
-     if (currentAudio) {
-      music[`${currentAudio}`].pause();
-      music[`${currentAudio}`].currentTime = 0;  // Reinicia el audio
-    }
-
-    // Iniciar la música del mapa actual
-    currentAudio = mapAudio[`${currentMapName}`];
-    music[`${currentAudio}`].play();
+    //  Reproducir el audio correspondiente al mapa actual
+     const currentAudio = mapAudio[currentMapName];
+     audioManagerInstance.play(currentAudio);
   },
   onExit: () => {
     window.removeEventListener('keydown', onKeyDown)
     window.removeEventListener('keyup', onKeyUp)
-    music[`${currentAudio}`].pause();
+    audioManagerInstance.stop();
   },
   onUpdate: () => {
     updatePlayer(stateMachine)
