@@ -33,6 +33,8 @@ class AudioManager {
         // Si el audio actual ya se está reproduciendo, no hacer nada
         if (this.currentAudio === audioName) {
             return;
+        }else{
+            this.music[audioName].pause();    
         }
         if (this.currentAudio) {
             this.music[this.currentAudio].volume = this.volume;

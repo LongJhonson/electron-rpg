@@ -33,7 +33,7 @@ function changeMap(newMap, newPlayerX, newPlayerY) {
   player.prevY = player.y;
 
   // Cambiar la música según el nuevo mapa
-  audioManagerInstance.stop();
+  // audioManagerInstance.stop();
   audioManagerInstance.play(mapAudio[currentMapName]);
 }
 
@@ -335,7 +335,7 @@ const Playing = (stateMachine) => ({
   onExit: () => {
     window.removeEventListener('keydown', onKeyDown)
     window.removeEventListener('keyup', onKeyUp)
-    audioManagerInstance.stop();
+    // audioManagerInstance.stop();
   },
   onUpdate: () => {
     updatePlayer(stateMachine)
