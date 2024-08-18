@@ -8,25 +8,46 @@ const soldier_tileset_path = '../assets/Texture/sprites/warrior_m.png' // Ruta a
 const soldier_tileset = new Image()
 soldier_tileset.src = soldier_tileset_path
 
-import { maps, mapObjects } from '../maps/map1'
+import { maps, mapObjects, mapAudio } from '../maps/map1'
 import { transitions } from '../maps/transitions'
 import { tiles, objects } from '../maps/tiles.js'
 
 let map = maps.map1
 let mapObject = mapObjects.map1
+let currentMapName = 'map1';
+
+//audios
+const music = {
+  "house" : new Audio('../assets/audio/house.mp3'),
+  "town" : new Audio('../assets/audio/town.mp3'),
+  "forest" : new Audio('../assets/audio/3.mp3'),
+}
 
 // let map = maps.casa_test;
 // let mapObject = mapObjects.casa_test;
 
+let currentAudio = null;
+
 function changeMap(newMap, newPlayerX, newPlayerY) {
-  map = maps[newMap]
-  mapObject = mapObjects[newMap]
-  player.x = newPlayerX * TILE_SIZE
-  player.y = newPlayerY * TILE_SIZE
-  player.prevX = player.x
-  player.prevY = player.y
-  // console.clear();
-  console.log(`Mapa cambiado a ${newMap}. Nueva posición del jugador: (${player.x}, ${player.y})`)
+  currentMapName = newMap;  // Actualiza el nombre del mapa actual
+  map = maps[newMap];
+  mapObject = mapObjects[newMap];
+  player.x = newPlayerX * TILE_SIZE;
+  player.y = newPlayerY * TILE_SIZE;
+  player.prevX = player.x;
+  player.prevY = player.y;
+
+  // Cambiar la música según el nuevo mapa
+  const newAudio = mapAudio[`${newMap}`];
+  if (currentAudio && currentAudio !== newAudio) {
+    music[`${currentAudio}`].pause();
+    music[`${currentAudio}`].currentTime = 0;  // Reinicia el audio anterior
+  }
+  
+  currentAudio = newAudio;
+  if(music[`${currentAudio}`]){
+  music[`${currentAudio}`].play();
+  }
 }
 
 let transitionCooldown = 0;
@@ -57,13 +78,8 @@ function handleTransition() {
         player.moving = false;
         // Evita la transición doble
         if (player.prevMap === transition.to && player.prevX === transition.x && player.prevY === transition.y) {
-            console.log('Evita transición doble');
             return;
         }
-
-        console.log(
-            `Transición encontrada: Cambiando a mapa ${transition.to} en posición (${transition.x}, ${transition.y})`
-        );
 
         // Guardar la posición y el mapa anteriores
         player.prevMap = map;
@@ -79,14 +95,10 @@ function handleTransition() {
             JSON.stringify({ map: transition.to, x: transition.x, y: transition.y })
         );
 
-        console.log(
-            `Mapa cambiado a ${transition.to}. Nueva posición del jugador: (${player.x}, ${player.y})`
-        );
-
         // Iniciar cooldown para la siguiente transición
         transitionCooldown = 20; // Ajusta este valor según lo que necesites
     } else {
-        console.log('No se encontró transición para el tile actual');
+        // console.log('No se encontró transición para el tile actual');
     }
 }
 
@@ -326,20 +338,23 @@ function onKeyUp(e) {
 
 const Playing = (stateMachine) => ({
   onEnter: () => {
-    console.log('Entering Playing State')
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
 
-    // if(localStorage.getItem("playerPosition")){
-    //     const data = JSON.parse(localStorage.getItem("playerPosition"));
-    //     console.log("load data --> ", data);
-    //     changeMap(data.map, data.x, data.y);
-    // }
+     // Detener cualquier audio anterior
+     if (currentAudio) {
+      music[`${currentAudio}`].pause();
+      music[`${currentAudio}`].currentTime = 0;  // Reinicia el audio
+    }
+
+    // Iniciar la música del mapa actual
+    currentAudio = mapAudio[`${currentMapName}`];
+    music[`${currentAudio}`].play();
   },
   onExit: () => {
-    console.log('Exiting Playing State')
     window.removeEventListener('keydown', onKeyDown)
     window.removeEventListener('keyup', onKeyUp)
+    music[`${currentAudio}`].pause();
   },
   onUpdate: () => {
     updatePlayer(stateMachine)

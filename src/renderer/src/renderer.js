@@ -11,6 +11,7 @@ const ctx = canvas.getContext('2d');
 
 const stateMachine = new StateMachine('MainMenu');
 
+//states
 const MainMenu = createMainMenu(stateMachine);
 const PlayingState = createPlayingState(stateMachine);
 const PauseState = createPauseState(stateMachine);
@@ -20,6 +21,10 @@ stateMachine.addState('MainMenu', MainMenu);
 stateMachine.addState('Playing', PlayingState);
 stateMachine.addState('Paused', PauseState);
 stateMachine.addState('Fight', FightState);
+
+//audio
+const mainMenuMusic = new Audio('../assets/audio/main_menu.mp3');
+// mainMenuMusic.play();
 
 const FPS = 30;
 const FRAME_DURATION = 1000 / FPS;
