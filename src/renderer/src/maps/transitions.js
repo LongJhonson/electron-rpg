@@ -31,11 +31,11 @@ export const transitions = {
     },
     "r1r2": {
         to: "ruta2",
-        x: 38,
-        y: 20
+        x: 36,
+        y: 21
     },
     "r2r1": { 
         "to": "ruta1", 
-        "x": 0, 
-        "y": 0 }
+        "x": 5, 
+        "y": 1 }
 }

@@ -18,8 +18,9 @@ let map = maps.map1
 let mapObject = mapObjects.map1
 let currentMapName = 'map1';
 
-// let map = maps.casa_test;
-// let mapObject = mapObjects.casa_test;
+// let map = maps.ruta1
+// let mapObject = mapObjects.ruta1
+// let currentMapName = 'ruta1';
 
 let currentAudio = null;
 
@@ -89,6 +90,30 @@ function handleTransition() {
     }
 }
 
+const interactiveObjects = [
+  { x: 2, y: 2, action: () => console.log('Interacted with t1') },
+  // Otros objetos interactuables pueden ser añadidos aquí
+];
+
+function isPlayerInFrontOfObject(player, object) {
+  const playerGridX = Math.floor(player.x / 32);
+  const playerGridY = Math.floor(player.y / 32);
+
+  // Asumiendo que el jugador tiene una propiedad `direction` que indica hacia dónde está mirando
+  // 'up', 'down', 'left', 'right'
+  switch (player.direction) {
+    case 0:
+      return playerGridX === object.x && playerGridY - 1 === object.y;
+    case 2:
+      return playerGridX === object.x && playerGridY + 1 === object.y;
+    case 3:
+      return playerGridX - 1 === object.x && playerGridY === object.y;
+    case 1:
+      return playerGridX + 1 === object.x && playerGridY === object.y;
+    default:
+      return false;
+  }
+}
 
 // Datos del jugador
 const player = {
@@ -302,7 +327,7 @@ function handleCollisionsBetween(startX, startY, endX, endY, stateMachine) {
           endY + player.height > tileTop &&
           startY < tileBottom
         ) {
-          if (Math.random() < 0.1) {
+          if (Math.random() < 0.01) { //0.1 == 10% 0.01 == 1%
             keys = {}
             stateMachine.changeState('Fight')
             return { x: startX, y: startY }
@@ -317,6 +342,15 @@ function handleCollisionsBetween(startX, startY, endX, endY, stateMachine) {
 
 function onKeyDown(e) {
   keys[e.key] = true
+  // Verificar si la tecla de interacción (por ejemplo, 'E') está presionada
+  // Verificar si la tecla de interacción (por ejemplo, 'E') está presionada
+  if (e.key === 'E') {
+    interactiveObjects.forEach(object => {
+      if (isPlayerInFrontOfObject(player, object)) {
+        object.action();
+      }
+    });
+  }
 }
 
 function onKeyUp(e) {
