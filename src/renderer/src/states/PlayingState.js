@@ -91,7 +91,8 @@ function handleTransition() {
 }
 
 const interactiveObjects = [
-  { x: 2, y: 2, action: () => console.log('Interacted with t1') },
+  // { x: 2, y: 2, action: () => console.log('Interacted with t1') },
+  { x: 2, y: 2, action: () => alert('Interacted with t1') },
   // Otros objetos interactuables pueden ser añadidos aquí
 ];
 
@@ -344,7 +345,7 @@ function onKeyDown(e) {
   keys[e.key] = true
   // Verificar si la tecla de interacción (por ejemplo, 'E') está presionada
   // Verificar si la tecla de interacción (por ejemplo, 'E') está presionada
-  if (e.key === 'E') {
+  if (e.key === 'E' || e.key === 'e') {
     interactiveObjects.forEach(object => {
       if (isPlayerInFrontOfObject(player, object)) {
         object.action();
