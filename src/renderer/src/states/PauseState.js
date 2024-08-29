@@ -1,3 +1,5 @@
+import player from "../class/Player";
+
 let selectedOptionIndex = 0;
 const menuOptions = ['Resume','Save', 'Load', 'Settings', 'Exit'];
 let keydownHandler = null; // Variable para almacenar la referencia del handler
@@ -57,10 +59,11 @@ function selectMenuOption(index, stateMachine) {
       console.log('Start Game selected');
       stateMachine.changeState('Playing'); // Cambiar al estado de juego
       break;
-      case 1:
+      case 1: //save
+      window.database.updatePlayer(player)
       localStorage.setItem("gameData", btoa(JSON.stringify({map: "map2", x: 5, y: 4})))
       break;
-      case 2:
+      case 2: 
       console.log("Load game --> ", JSON.parse(atob(localStorage.getItem("gameData"))))
         break;
     case 3:

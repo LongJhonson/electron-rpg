@@ -21,6 +21,24 @@ db.prepare(`
     
 `).run();
 
+db.prepare(`CREATE TABLE IF NOT EXISTS player (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  lvl INTEGER,
+  max_hp INTEGER,
+  hp INTEGER,
+  max_mp INTEGER,
+  mp INTEGER,
+  atk INTEGER,
+  def INTEGER,
+  spd INTEGER,
+  exp INTEGER,
+  exp_to_lvl INTEGER,
+  gold INTEGER,
+  x INTEGER,
+  y INTEGER,
+  direction INTEGER
+  );`).run();
+
 db.prepare(`CREATE TABLE IF NOT EXISTS settings (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   music_volume INTEGER,
@@ -120,6 +138,75 @@ ipcMain.handle('update-settings', (event, settings) => {
   const stmt = db.prepare('UPDATE settings SET music_volume = ?, sfx_volume = ?');
   const info = stmt.run(music_volume, sfx_volume);
   return info;
+});
+
+ipcMain.handle('get-player', () => {
+  const stmt = db.prepare('SELECT * FROM player where id = 1');
+  const player = stmt.get();
+  return player;
+});
+
+ipcMain.handle('update-player', (event, player) => {
+  console.log('update-player', player);
+  const { lvl, max_hp, hp, max_mp, mp, atk, def, spd, exp, exp_to_lvl, gold, x, y, width, height, speed, frameIndex, tickCount, frameSpeed, spriteSheet, spriteWidth, spriteHeight, spriteColumns, spriteRows, direction } = player;
+  // const stmt = db.prepare(`
+  //   UPDATE player 
+  //   SET 
+  //   lvl = ?, 
+  //   max_hp = ?, 
+  //   hp = ?, 
+  //   max_mp = ?, 
+  //   mp = ?, 
+  //   atk = ?, 
+  //   def = ?, 
+  //   spd = ?, 
+  //   exp = ?, 
+  //   exp_to_lvl = ?, 
+  //   gold = ?, 
+  //   x = ?, 
+  //   y = ?, 
+  //   width = ?, 
+  //   height = ?, 
+  //   speed = ?, 
+  //   frameIndex = ?, 
+  //   tickCount = ?, 
+  //   frameSpeed = ?, 
+  //   spriteSheet = ?, 
+  //   spriteWidth = ?, 
+  //   spriteHeight = ?, 
+  //   spriteColumns = ?, 
+  //   spriteRows = ?, 
+  //   direction = ? 
+  //   where id = 1 `);
+  const stmt = db.prepare(`
+    UPDATE player 
+    SET 
+    lvl = ?, 
+    max_hp = ?, 
+    hp = ?, 
+    max_mp = ?, 
+    mp = ?, 
+    atk = ?, 
+    def = ?, 
+    spd = ?, 
+    exp = ?, 
+    exp_to_lvl = ?, 
+    gold = ?, 
+    x = ?, 
+    y = ?, 
+    direction = ? 
+    where id = 1`);
+  try {
+    const info = stmt.run(
+      lvl,
+      max_hp,
+      hp,
+      max_mp, mp, atk, def, spd, exp, exp_to_lvl, gold, x, y, direction);
+    console.log({ info })
+    return info;
+  } catch (e) {
+    console.log(e);
+  }
 });
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.

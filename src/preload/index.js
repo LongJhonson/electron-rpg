@@ -15,7 +15,9 @@ if (process.contextIsolated) {
       insertUser: (name, score) => ipcRenderer.invoke('insert-user', name, score),
       getUsers: () => ipcRenderer.invoke('get-users'),
       getSettings: () => ipcRenderer.invoke('get-settings'),
-      saveSettings: (settings) => ipcRenderer.invoke('update-settings', settings)
+      saveSettings: (settings) => ipcRenderer.invoke('update-settings', settings),
+      getPlayer: () => ipcRenderer.invoke('get-player'),
+      updatePlayer: (player) => ipcRenderer.invoke('update-player', player)
     })
   } catch (error) {
     console.error(error)
