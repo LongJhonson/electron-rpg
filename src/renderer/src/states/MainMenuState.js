@@ -4,10 +4,24 @@ let mainMenuKeydownHandler = null; // Variable para almacenar la referencia del 
 import audioManagerInstance from "../class/AudioManager";
 
 
+async function loadData (){
+  const data = await window.database.getUsers();
+  console.log("main_menu", data)
+  loadSettings();
+}
+
+async function loadSettings(){
+  const settings = await window.database.getSettings();
+  console.log("settings", {settings}, settings.music_volume)
+  audioManagerInstance.setVolume(settings.music_volume)
+}
+
+
 
 const MainMenu = (stateMachine) => ({
   onEnter: () => {
     console.log('Entering Main Menu State');
+    loadData();
     mainMenuKeydownHandler = (e) => onMainMenuKeyDown(e, stateMachine);
     window.addEventListener('keydown', mainMenuKeydownHandler);
     audioManagerInstance.play("main_menu")

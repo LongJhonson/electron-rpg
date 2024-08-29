@@ -9,9 +9,14 @@ const menuOptions = {
 let selectedOptionIndex = 0;
 let keydownHandler = null; // Variable para almacenar la referencia del handler
 
+async function saveSettings() {
+    await window.database.saveSettings({ music_volume: audioManagerInstance.getVolume() });
+}
+
 
 const Settings = (stateMachine) => ({
     onEnter: () => {
+        menuOptions.vol = audioManagerInstance.getVolume();
         console.log('Entering Settings State');
         keydownHandler = (e) => onSettingsKeyDown(e, stateMachine);
         window.addEventListener('keydown', keydownHandler);
@@ -21,6 +26,7 @@ const Settings = (stateMachine) => ({
             window.removeEventListener('keydown', keydownHandler);
             keydownHandler = null; // Limpia la referencia después de eliminar el listener
           }
+          saveSettings();
     },
     onUpdate: () => { },
     onRender: (ctx) => {
