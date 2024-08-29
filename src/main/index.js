@@ -1,4 +1,5 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
+const electron = require('electron')
 import { join } from 'path'
 const path = require('path');
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'

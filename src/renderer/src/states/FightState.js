@@ -6,6 +6,7 @@ import player from "../class/Player";
 const keys = {}
 
 
+
 const Combat = (stateMachine) => {
     let battleStarted = false;
     let enemy = null;
@@ -15,7 +16,7 @@ const Combat = (stateMachine) => {
     // Inicializar el combate
     const initCombat = () => {
         console.log("Inicio del combate");
-        enemy = { /* Datos del enemigo */ };
+        // enemy = { /* Datos del enemigo */ };
         battleStarted = true;
         playerTurn = true; // El jugador comienza
     };
@@ -52,6 +53,11 @@ const Combat = (stateMachine) => {
             initCombat();
         }
 
+        if(!enemy) return;
+        if(enemy.health <= 0){
+            stateMachine.changeState("Playing");
+        }
+
         // Actualizar el combate según el turno
         if (playerTurn) {
             if (turnAction) {
@@ -78,6 +84,17 @@ const Combat = (stateMachine) => {
         // Dibujar al enemigo
         if (enemy) {
             // Ejemplo: ctx.drawImage(enemy.sprite, enemy.x, enemy.y);
+            ctx.fillStyle = 'white';
+            ctx.fillText(`${enemy.name} (${enemy.level})`, 10, 25 );
+            ctx.fillText(`Level: ${enemy.level}`, 10, 50 );
+            ctx.fillText(`${enemy.max_hp} / ${enemy.health}`, 10, 75 );
+            //draw health bar of enemy
+            ctx.fillStyle = 'red';
+            ctx.fillRect(10, 80, 100, 10);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(10, 80, 100 * (enemy.health / enemy.max_hp), 10);
+            //draw first 32x32 of the sprite
+            ctx.drawImage(enemy.img, 0, 0, 32, 32, 10, 100, 32, 32);
         }
 
         // Aquí puedes dibujar otros elementos de la interfaz de combate
@@ -91,6 +108,7 @@ const Combat = (stateMachine) => {
         if (playerTurn) {
             if (e.key === 'a') {
                 turnAction = 'attack'; // Establecer acción de ataque
+                enemy.health -= 10; // Ejemplo de daño al enemigo
             } else if (e.key === 'Escape') {
                 stateMachine.changeState('Playing')
             }
@@ -102,19 +120,38 @@ const Combat = (stateMachine) => {
         keys[e.key] = false;
     };
 
+    function selectBasedOnSpawnRate(array) {
+        console.log("array => ", array);
+        
+        const totalSpawnRate = array.reduce((sum, item) => sum + item.spawn_rate, 0);
+        let random = Math.random() * totalSpawnRate;
+        random = random.toFixed(1);
+        
+        let acum = 0;
+        for (let i = 0; i < array.length; i++) {
+            acum += array[i].spawn_rate;
+            if (random < acum) {
+                return array[i];
+            }
+        }
+
+    }
+
     const setupEnemy = () => {
         console.log("map => ", player.map);
-        const posible_enemies = mapEnemies[player.map].mobs;
+        // const posible_enemies = mapEnemies[player.map].mobs;
+        const posible_enemies = mapEnemies[player.map].mobs.map((mob) => enemies[mob]);
+
+
         const posible_lvl_range = mapEnemies[player.map].lvl_range;
-        const randomEnemy = Math.floor(Math.random() * posible_enemies.length);
-        enemy = enemies[posible_enemies[randomEnemy]];
-        // enemy.level = Math.floor(Math.random() * (posible_lvl_range[1] - posible_lvl_range[0] + 1)) + posible_lvl_range[0];
-        enemy.level = 2;
-        enemy.health = enemy.health + (enemy.healthMultiplier * enemy.level + enemy.health);
+        enemy = {...selectBasedOnSpawnRate(posible_enemies)};
+        enemy.level = Math.floor(Math.random() * (posible_lvl_range[1] - posible_lvl_range[0] + 1)) + posible_lvl_range[0];
+        enemy.health = enemy.health + (enemy.health * enemy.healthMultiplier * enemy.level );
         enemy.attack = enemy.attack + enemy.attackMultiplier * enemy.level;
         enemy.defense = enemy.defense + enemy.defenseMultiplier * enemy.level;
         enemy.speed = enemy.speed + enemy.speedMultiplier * enemy.level;
-        console.log("enemy => ", enemy);
+        enemy.max_hp = enemy.health;
+        // enemy.health = enemy.health -20;
     }
 
     return {
@@ -131,6 +168,7 @@ const Combat = (stateMachine) => {
             window.removeEventListener('keydown', onKeyDown);
             window.removeEventListener('keyup', onKeyUp);
             audioManagerInstance.stop();
+            enemy = null;
         },
         onUpdate: () => {
             updateCombat();

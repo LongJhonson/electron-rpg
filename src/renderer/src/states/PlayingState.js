@@ -354,8 +354,7 @@ const Playing = (stateMachine) => {
       //  Reproducir el audio correspondiente al mapa actual
       const currentAudio = mapAudio[currentMapName];
       audioManagerInstance.play(currentAudio);
-  changeMap(player.map, player.x / TILE_SIZE, player.y / TILE_SIZE);
-
+      changeMap(player.map, player.x / TILE_SIZE, player.y / TILE_SIZE);
     },
     onExit: () => {
       console.log('Exiting Playing State')
