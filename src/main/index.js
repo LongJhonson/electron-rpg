@@ -148,7 +148,7 @@ ipcMain.handle('get-player', () => {
 
 ipcMain.handle('update-player', (event, player) => {
   console.log('update-player', player);
-  const { lvl, max_hp, hp, max_mp, mp, atk, def, spd, exp, exp_to_lvl, gold, x, y, width, height, speed, frameIndex, tickCount, frameSpeed, spriteSheet, spriteWidth, spriteHeight, spriteColumns, spriteRows, direction } = player;
+  const { lvl, max_hp, hp, max_mp, mp, atk, def, spd, exp, exp_to_lvl, gold, x, y, map, direction } = player;
   // const stmt = db.prepare(`
   //   UPDATE player 
   //   SET 
@@ -194,14 +194,27 @@ ipcMain.handle('update-player', (event, player) => {
     gold = ?, 
     x = ?, 
     y = ?, 
-    direction = ? 
+    direction = ?,
+    map = ?
     where id = 1`);
   try {
     const info = stmt.run(
       lvl,
       max_hp,
       hp,
-      max_mp, mp, atk, def, spd, exp, exp_to_lvl, gold, x, y, direction);
+      max_mp,
+      mp,
+      atk,
+      def,
+      spd,
+      exp,
+      exp_to_lvl,
+      gold,
+      x,
+      y,
+      direction,
+      map
+    );
     console.log({ info })
     return info;
   } catch (e) {

@@ -2,11 +2,29 @@ let selectedOptionIndex = 0;
 const menuOptions = ['Start Game', 'Settings', 'Exit'];
 let mainMenuKeydownHandler = null; // Variable para almacenar la referencia del handler
 import audioManagerInstance from "../class/AudioManager";
+import player from "../class/Player";
 
 
 async function loadData (){
   const data = await window.database.getUsers();
   console.log("main_menu", data)
+  const playerData = await window.database.getPlayer();
+  console.log(playerData);
+  player.lvl = playerData.lvl;
+  player.max_hp = playerData.max_hp;
+  player.hp = playerData.hp;
+  player.max_mp = playerData.max_mp;
+  player.mp = playerData.mp;
+  player.atk = playerData.atk;
+  player.def = playerData.def;
+  player.spd = playerData.spd;
+  player.exp = playerData.exp;
+  player.exp_to_lvl = playerData.exp_to_lvl;
+  player.gold = playerData.gold;
+  player.x = playerData.x;
+  player.y = playerData.y;
+  player.direction = playerData.direction;
+  player.map = playerData.map;
   loadSettings();
 }
 
