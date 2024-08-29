@@ -18,6 +18,9 @@ let map = maps.map1
 let mapObject = mapObjects.map1
 let currentMapName = 'map1';
 
+let playingKeyDownHandler = "";
+let playingKeyUpHandler = "";
+
 // let map = maps.ruta1
 // let mapObject = mapObjects.ruta1
 // let currentMapName = 'ruta1';
@@ -41,58 +44,58 @@ function changeMap(newMap, newPlayerX, newPlayerY) {
 let transitionCooldown = 0;
 
 function handleTransition() {
-    if (transitionCooldown > 0) {
-        transitionCooldown--;
-        return;
+  if (transitionCooldown > 0) {
+    transitionCooldown--;
+    return;
+  }
+
+  const playerTileX = Math.floor(player.x / TILE_SIZE);
+  const playerTileY = Math.floor(player.y / TILE_SIZE);
+
+  if (
+    playerTileY < 0 ||
+    playerTileY >= map.length ||
+    playerTileX < 0 ||
+    playerTileX >= map[0].length
+  ) {
+    console.log('El jugador está fuera de los límites del mapa');
+    return;
+  }
+
+  const tileValue = map[playerTileY][playerTileX];
+
+  if (transitions[`${tileValue}`]) {
+    const transition = transitions[`${tileValue}`];
+    player.moving = false;
+    // Evita la transición doble
+    if (player.prevMap === transition.to && player.prevX === transition.x && player.prevY === transition.y) {
+      return;
     }
 
-    const playerTileX = Math.floor(player.x / TILE_SIZE);
-    const playerTileY = Math.floor(player.y / TILE_SIZE);
+    // Guardar la posición y el mapa anteriores
+    player.prevMap = map;
+    player.prevX = playerTileX;
+    player.prevY = playerTileY;
 
-    if (
-        playerTileY < 0 ||
-        playerTileY >= map.length ||
-        playerTileX < 0 ||
-        playerTileX >= map[0].length
-    ) {
-        console.log('El jugador está fuera de los límites del mapa');
-        return;
-    }
+    // Actualizar mapa y posición del jugador sin colisiones
+    changeMap(transition.to, transition.x, transition.y);
 
-    const tileValue = map[playerTileY][playerTileX];
+    // Guardar la nueva posición del jugador
+    localStorage.setItem(
+      'playerPosition',
+      JSON.stringify({ map: transition.to, x: transition.x, y: transition.y })
+    );
 
-    if (transitions[`${tileValue}`]) {
-        const transition = transitions[`${tileValue}`];
-        player.moving = false;
-        // Evita la transición doble
-        if (player.prevMap === transition.to && player.prevX === transition.x && player.prevY === transition.y) {
-            return;
-        }
-
-        // Guardar la posición y el mapa anteriores
-        player.prevMap = map;
-        player.prevX = playerTileX;
-        player.prevY = playerTileY;
-
-        // Actualizar mapa y posición del jugador sin colisiones
-        changeMap(transition.to, transition.x, transition.y);
-
-        // Guardar la nueva posición del jugador
-        localStorage.setItem(
-            'playerPosition',
-            JSON.stringify({ map: transition.to, x: transition.x, y: transition.y })
-        );
-
-        // Iniciar cooldown para la siguiente transición
-        transitionCooldown = 20; // Ajusta este valor según lo que necesites
-    } else {
-        // console.log('No se encontró transición para el tile actual');
-    }
+    // Iniciar cooldown para la siguiente transición
+    transitionCooldown = 20; // Ajusta este valor según lo que necesites
+  } else {
+    // console.log('No se encontró transición para el tile actual');
+  }
 }
 
 const interactiveObjects = [
   // { x: 2, y: 2, action: () => console.log('Interacted with t1') },
-  { x: 2, y: 2, action: () => alert('Interacted with t1') },
+  { x: 2, y: 2, action: (stateMachine) => stateMachine.changeState('Shop') },
   // Otros objetos interactuables pueden ser añadidos aquí
 ];
 
@@ -341,50 +344,74 @@ function handleCollisionsBetween(startX, startY, endX, endY, stateMachine) {
   return { x: endX, y: endY }
 }
 
-function onKeyDown(e) {
-  keys[e.key] = true
-  // Verificar si la tecla de interacción (por ejemplo, 'E') está presionada
-  // Verificar si la tecla de interacción (por ejemplo, 'E') está presionada
-  if (e.key === 'E' || e.key === 'e') {
-    interactiveObjects.forEach(object => {
-      if (isPlayerInFrontOfObject(player, object)) {
-        object.action();
-      }
-    });
-  }
-}
 
-function onKeyUp(e) {
-  keys[e.key] = false
-}
+function createKeyDownHandler(stateMachine) {
+  return function onKeyDown(e) {
+    keys[e.key] = true;
 
-const Playing = (stateMachine) => ({
-  onEnter: () => {
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-
-    //  Reproducir el audio correspondiente al mapa actual
-     const currentAudio = mapAudio[currentMapName];
-     audioManagerInstance.play(currentAudio);
-  },
-  onExit: () => {
-    window.removeEventListener('keydown', onKeyDown)
-    window.removeEventListener('keyup', onKeyUp)
-    // audioManagerInstance.stop();
-  },
-  onUpdate: () => {
-    updatePlayer(stateMachine)
-    handleTransition()
-    if (keys['Escape']) {
-      keys['Escape'] = false
-      stateMachine.changeState('Paused')
+    // Verificar si la tecla de interacción (por ejemplo, 'E') está presionada
+    if (e.key === 'E' || e.key === 'e') {
+      interactiveObjects.forEach(object => {
+        if (isPlayerInFrontOfObject(player, object)) {
+          object.action(stateMachine);
+        }
+      });
     }
-  },
-  onRender: (ctx) => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    drawMap(ctx)
-    drawPlayer(ctx)
+
+    // Ejemplo de cambio de estado
+    if (e.key === 'Escape') {
+      stateMachine.changeState('Paused');
+    }
+  };
+}
+
+function createKeyUpHandler() {
+  return function onKeyUp(e) {
+    keys[e.key] = false;
+  };
+}
+
+
+const Playing = (stateMachine) => {
+  const playingKeyDownHandler = createKeyDownHandler(stateMachine);
+  const playingKeyUpHandler = createKeyUpHandler();
+  return {
+    onEnter: () => {
+      console.log("entering Playing State")
+      //modificar para pasar stateMachine
+      // playingKeyDownHandler = onKeyDown
+      window.addEventListener('keydown', playingKeyDownHandler);
+      // window.addEventListener('keydown', onKeyDown); 
+
+
+      // window.addEventListener('keyup', onKeyUp);
+      // playingKeyUpHandler = onKeyUp;
+      window.addEventListener('keyup', playingKeyUpHandler);
+
+      //  Reproducir el audio correspondiente al mapa actual
+      const currentAudio = mapAudio[currentMapName];
+      audioManagerInstance.play(currentAudio);
+    },
+    onExit: () => {
+      console.log('Exiting Playing State')
+      window.removeEventListener('keydown', playingKeyDownHandler);
+      window.removeEventListener('keyup', playingKeyUpHandler);
+      // audioManagerInstance.stop();
+    },
+    onUpdate: () => {
+      updatePlayer(stateMachine)
+      handleTransition()
+      // if (keys['Escape']) {
+      //   keys['Escape'] = false
+      //   stateMachine.changeState('Paused')
+      // }
+    },
+    onRender: (ctx) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      drawMap(ctx)
+      drawPlayer(ctx)
+    }
   }
-})
+}
 
 export default Playing
