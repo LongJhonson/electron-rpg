@@ -6,6 +6,7 @@ import createSettingsState from './states/SettingsState.js';
 import createPlayingState from './states/PlayingState.js'
 import createPauseState from './states/PauseState.js';
 import createFightState from './states/FightState.js';
+import createShopState from './states/ShopState.js';
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -18,12 +19,14 @@ const SettingsState = createSettingsState(stateMachine);
 const PlayingState = createPlayingState(stateMachine);
 const PauseState = createPauseState(stateMachine);
 const FightState = createFightState(stateMachine);
+const ShopState = createShopState(stateMachine);
 
 stateMachine.addState('MainMenu', MainMenu);
 stateMachine.addState('Settings', SettingsState)
 stateMachine.addState('Playing', PlayingState);
 stateMachine.addState('Paused', PauseState);
 stateMachine.addState('Fight', FightState);
+stateMachine.addState('Shop', ShopState);
 
 //audio
 const mainMenuMusic = new Audio('../assets/audio/main_menu.mp3');

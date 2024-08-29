@@ -45,6 +45,9 @@ function onPauseKeyDown(event, stateMachine) {
     case 'Enter':
       selectMenuOption(selectedOptionIndex, stateMachine);
       break;
+      case 'Escape':
+        stateMachine.changeState("Playing")
+        break;
   }
 }
 
