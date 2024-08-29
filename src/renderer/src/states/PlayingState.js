@@ -1,4 +1,4 @@
-import { maps, mapObjects, mapAudio } from '../maps/map1'
+import { maps, mapObjects, mapAudio, mapInteractions } from '../maps/map1'
 import { transitions } from '../maps/transitions'
 import { tiles, objects } from '../maps/tiles.js'
 import audioManagerInstance from '../class/AudioManager.js'
@@ -18,14 +18,6 @@ let map = maps.map1
 let mapObject = mapObjects.map1
 let currentMapName = 'map1';
 
-let playingKeyDownHandler = "";
-let playingKeyUpHandler = "";
-
-// let map = maps.ruta1
-// let mapObject = mapObjects.ruta1
-// let currentMapName = 'ruta1';
-
-let currentAudio = null;
 
 function changeMap(newMap, newPlayerX, newPlayerY) {
   currentMapName = newMap;  // Actualiza el nombre del mapa actual
@@ -92,12 +84,6 @@ function handleTransition() {
     // console.log('No se encontró transición para el tile actual');
   }
 }
-
-const interactiveObjects = [
-  // { x: 2, y: 2, action: () => console.log('Interacted with t1') },
-  { x: 2, y: 2, action: (stateMachine) => stateMachine.changeState('Shop') },
-  // Otros objetos interactuables pueden ser añadidos aquí
-];
 
 function isPlayerInFrontOfObject(player, object) {
   const playerGridX = Math.floor(player.x / 32);
@@ -351,7 +337,10 @@ function createKeyDownHandler(stateMachine) {
 
     // Verificar si la tecla de interacción (por ejemplo, 'E') está presionada
     if (e.key === 'E' || e.key === 'e') {
-      interactiveObjects.forEach(object => {
+      //cuurentMapinteractions
+      const currentInteractions = mapInteractions[currentMapName];
+      console.log(currentInteractions)
+      currentInteractions.forEach(object => {
         if (isPlayerInFrontOfObject(player, object)) {
           object.action(stateMachine);
         }
