@@ -2,12 +2,12 @@ import { maps, mapObjects, mapAudio, mapInteractions } from '../maps/map1'
 import { transitions } from '../maps/transitions'
 import { tiles, objects } from '../maps/tiles.js'
 import audioManagerInstance from '../class/AudioManager.js'
+import player from '../class/Player.js'
 
 // Tamaño de cada tile en píxeles
 const TILE_SIZE = 32
 const PLAYER_TILE_SIZE = 32
-const PLAYER_TILE_ROW = 0 // Fila del tileset que contiene el jugador
-const PLAYER_TILE_COL = 0
+
 
 const soldier_tileset_path = '../assets/Texture/sprites/warrior_m.png' // Ruta a tu tileset
 const soldier_tileset = new Image()
@@ -27,9 +27,9 @@ function changeMap(newMap, newPlayerX, newPlayerY) {
   player.y = newPlayerY * TILE_SIZE;
   player.prevX = player.x;
   player.prevY = player.y;
+  player.map = newMap;
 
   // Cambiar la música según el nuevo mapa
-  // audioManagerInstance.stop();
   audioManagerInstance.play(mapAudio[currentMapName]);
 }
 
@@ -70,7 +70,7 @@ function handleTransition() {
     player.prevY = playerTileY;
 
     // Actualizar mapa y posición del jugador sin colisiones
-    changeMap(transition.to, transition.x, transition.y);
+    changeMap(transition.to, transition.x, transition.y, player);
 
     // Guardar la nueva posición del jugador
     localStorage.setItem(
@@ -103,24 +103,6 @@ function isPlayerInFrontOfObject(player, object) {
     default:
       return false;
   }
-}
-
-// Datos del jugador
-const player = {
-  x: 1 * TILE_SIZE,
-  y: 3 * TILE_SIZE,
-  width: TILE_SIZE,
-  height: TILE_SIZE,
-  speed: 4,
-  frameIndex: 0,
-  tickCount: 0,
-  frameSpeed: 10,
-  spriteSheet: soldier_tileset,
-  spriteWidth: PLAYER_TILE_SIZE,
-  spriteHeight: PLAYER_TILE_SIZE,
-  spriteColumns: 3,
-  spriteRows: 1,
-  direction: 1
 }
 
 let keys = {}
@@ -204,7 +186,8 @@ function updatePlayer(stateMachine) {
         player.prevY,
         player.x,
         player.y,
-        stateMachine
+        stateMachine,
+        player
       )
       player.x = newPos.x
       player.y = newPos.y
@@ -215,7 +198,7 @@ function updatePlayer(stateMachine) {
       player.x = player.moveStartX + (player.moveEndX - player.moveStartX) * player.moveProgress
       player.y = player.moveStartY + (player.moveEndY - player.moveStartY) * player.moveProgress
 
-      const collisionPos = handleCollisionsBetween(prevX, prevY, player.x, player.y, stateMachine)
+      const collisionPos = handleCollisionsBetween(prevX, prevY, player.x, player.y, stateMachine, player)
       player.x = collisionPos.x
       player.y = collisionPos.y
     }
@@ -360,40 +343,28 @@ function createKeyUpHandler() {
   };
 }
 
-
 const Playing = (stateMachine) => {
   const playingKeyDownHandler = createKeyDownHandler(stateMachine);
   const playingKeyUpHandler = createKeyUpHandler();
   return {
-    onEnter: () => {
+    onEnter: async () => {
       console.log("entering Playing State")
-      //modificar para pasar stateMachine
-      // playingKeyDownHandler = onKeyDown
       window.addEventListener('keydown', playingKeyDownHandler);
-      // window.addEventListener('keydown', onKeyDown); 
-
-
-      // window.addEventListener('keyup', onKeyUp);
-      // playingKeyUpHandler = onKeyUp;
       window.addEventListener('keyup', playingKeyUpHandler);
-
       //  Reproducir el audio correspondiente al mapa actual
       const currentAudio = mapAudio[currentMapName];
       audioManagerInstance.play(currentAudio);
+  changeMap(player.map, player.x / TILE_SIZE, player.y / TILE_SIZE);
+
     },
     onExit: () => {
       console.log('Exiting Playing State')
       window.removeEventListener('keydown', playingKeyDownHandler);
       window.removeEventListener('keyup', playingKeyUpHandler);
-      // audioManagerInstance.stop();
     },
     onUpdate: () => {
       updatePlayer(stateMachine)
       handleTransition()
-      // if (keys['Escape']) {
-      //   keys['Escape'] = false
-      //   stateMachine.changeState('Paused')
-      // }
     },
     onRender: (ctx) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)

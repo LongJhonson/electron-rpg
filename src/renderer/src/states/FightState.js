@@ -1,4 +1,5 @@
 import audioManagerInstance from "../class/AudioManager";
+import player from "../class/Player";
 
 const keys = {}
 
@@ -104,6 +105,7 @@ const Combat = (stateMachine) => {
           console.log('Entrando en el estado de combate');
           window.addEventListener('keydown', onKeyDown);
           window.addEventListener('keyup', onKeyUp);
+          console.log(player)
         audioManagerInstance.play("battle");
       },
       onExit: () => {
