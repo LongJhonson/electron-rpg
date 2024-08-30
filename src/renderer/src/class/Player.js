@@ -8,6 +8,7 @@ const PLAYER_TILE_SIZE = 32
 
 class Player {
 
+    name= "Player"
     x= 1 * TILE_SIZE
     y= 3 * TILE_SIZE
     width= TILE_SIZE
@@ -23,6 +24,7 @@ class Player {
     spriteRows= 1
     direction= 1
     map = "map1"
+    img = soldier_tileset
 
     constructor() {
         this.lvl = 1;

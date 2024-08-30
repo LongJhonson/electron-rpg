@@ -300,7 +300,7 @@ function handleCollisionsBetween(startX, startY, endX, endY, stateMachine) {
           endY + player.height > tileTop &&
           startY < tileBottom
         ) {
-          if (Math.random() < 0.01) { //0.1 == 10% 0.01 == 1%
+          if (Math.random() < 0.1) { //0.1 == 10% 0.01 == 1%
             keys = {}
             stateMachine.changeState('Fight')
             return { x: startX, y: startY }
