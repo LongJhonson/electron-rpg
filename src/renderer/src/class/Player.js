@@ -38,6 +38,24 @@ class Player {
         this.exp = 0;
         this.exp_to_lvl = 100;
         this.gold = 0;
+        this.items =[
+            {
+                "type": "consumable",
+                "name": "Potion",
+                "description": "Heals 50 HP",
+                "value": 50,
+                "stat": "hp",
+                "quantity": 5
+            },
+            {
+                "type": "consumable",
+                "name": "Mana Potion",
+                "description": "Restores 25 MP",
+                "value": 25,
+                "stat": "mp",
+                "quantity": 5
+            }
+        ]
     }
     // Getters
     getLvl() {

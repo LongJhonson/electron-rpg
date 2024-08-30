@@ -9,7 +9,7 @@ lime_tileset.src = lime_tileset_path
 export const enemies = {
     goblin: {
         name: 'Goblin',
-        health: 100,
+        health: 50,
         healthMultiplier: 0.2,
         attack: 10,
         attackMultiplier: 0.2,
@@ -17,7 +17,7 @@ export const enemies = {
         defenseMultiplier: 0.2,
         speed: 5,
         speedMultiplier: 0.2,
-        experience: 50,
+        experience: 100,
         experienceMultiplier: 0.2,
         gold: 20,
         goldMultiplier: 0.2,
@@ -26,7 +26,7 @@ export const enemies = {
     },
     lime: {
         name: 'Lime',
-        health: 50,
+        health: 20,
         healthMultiplier: 0.2,
         attack: 5,
         attackMultiplier: 0.2,
@@ -34,7 +34,7 @@ export const enemies = {
         defenseMultiplier: 0.2,
         speed: 2,
         speedMultiplier: 0.2,
-        experience: 20,
+        experience: 100,
         experienceMultiplier: 0.2,
         gold: 5,
         goldMultiplier: 0.2,
