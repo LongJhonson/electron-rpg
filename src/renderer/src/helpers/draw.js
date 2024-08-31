@@ -9,6 +9,8 @@ export function drawFightBottomBox(ctx) {
 }
 
 export function drawEnemy(ctx, enemy) {
+    //set font
+    ctx.font = "25px Arial";
     // Ejemplo: ctx.drawImage(enemy.sprite, enemy.x, enemy.y);
     ctx.fillStyle = 'white';
     ctx.fillText(`${enemy.name} (${enemy.level})`, 10, 25);
@@ -25,6 +27,8 @@ export function drawEnemy(ctx, enemy) {
 }
 
 export function drawPlayer(ctx, player) {
+    //set font 
+    ctx.font = "20px Arial";
     ctx.fillText(`lvl: ${player.lvl}`, 20, 630);
     //draw health bar of player
     ctx.fillStyle = 'red';
@@ -48,6 +52,7 @@ export function drawPlayer(ctx, player) {
 }
 
 export function drawItemsBox(ctx, items, selectedItem = 0) {
+    ctx.font = "20px Arial";
     ctx.fillStyle = 'white';
     ctx.beginPath();
     ctx.lineWidth = 2;
@@ -81,6 +86,7 @@ export function drawItemsBox(ctx, items, selectedItem = 0) {
     ctx.lineTo(450, 590);
     ctx.stroke();
 
+    //set font
 
     for (let i = 0; i < items.length; i++) {
         ctx.fillText(items[i].name, 150, 70 + 30 * i);
@@ -100,6 +106,8 @@ ctx.fill();
 }
 
 export function drawCombatOptions(ctx, currentOption = 0) {
+    //set font 
+    ctx.font = "30px Arial";
     ctx.fillStyle = 'white';
     ctx.fillText("Attack", 500, 640);
     ctx.fillText("Defend", 500, 700);
