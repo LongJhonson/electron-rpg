@@ -53,6 +53,20 @@ export function drawPlayer(ctx, player) {
     ctx.drawImage(player.img, 0, 0, 32, 32, 10, 245, 32, 32);
 }
 
+function drawShopBackground(ctx) {
+    ctx.font = "20px Arial";
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "white";
+    ctx.rect(110, 10, 1161, 580);
+    ctx.stroke();
+    //fill the box with light gray
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(111, 11, 1160, 579);
+}
+
 export function drawItemsBox(ctx, items, selectedItem = 0) {
     ctx.font = "20px Arial";
     ctx.fillStyle = 'white';
@@ -107,7 +121,56 @@ ctx.lineTo(120 , 50+ 30 * selectedItem); // Volver al punto inicial
 ctx.fill();
 }
 
-export function drawShop(ctx, items, selectedItem = 0) {
+export const drawShopMenu = (ctx, options, optionIndex = 0) => {
+
+    ctx.font = "20px Arial";
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "white";
+    ctx.rect(480, 600, 450, 200);
+    ctx.stroke();
+    //fill the box with light gray
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(480, 600, 450, 200);
+
+    // drawShopBackground(ctx);
+    ctx.font = "30px Arial";
+    ctx.fillStyle = 'white';
+    ctx.fillText("Buy", 520, 640);
+    ctx.fillText("Sell", 520, 700);
+    ctx.fillText("Exit", 850, 640);
+    // for (let i = 0; i < options.length; i++) {
+    //     ctx.fillText(options[i], 520, 640 + 60 * i);
+    // }
+    ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.lineWidth = 1;
+    switch (optionIndex) {
+        case 0:
+            ctx.moveTo(490, 620);
+            ctx.lineTo(490, 640);
+            ctx.lineTo(510, 630);
+            ctx.lineTo(490, 620);
+            break;
+        case 1:
+            ctx.moveTo(490, 680);
+            ctx.lineTo(490, 700);
+            ctx.lineTo(510, 690);
+            ctx.lineTo(490, 680);
+            break;
+        case 2:
+            ctx.moveTo(820, 620);
+            ctx.lineTo(820, 640);
+            ctx.lineTo(840, 630);
+            ctx.lineTo(820, 620);
+            break;
+    }
+    ctx.fill();
+}
+
+export function drawShopItems(ctx, items, selectedItem = 0) {
     ctx.font = "20px Arial";
     ctx.fillStyle = 'white';
     ctx.beginPath();
@@ -123,42 +186,42 @@ export function drawShop(ctx, items, selectedItem = 0) {
     //draw the items
     ctx.fillStyle = 'white';
     ctx.fillText("Items", 150, 35);
-//     ctx.fillText("Quantity", 340, 35);
-//     ctx.fillText("Description", 470, 35);
-//     //draw lines to separate items
-//     ctx.beginPath();
-//     ctx.lineWidth = 1;
-//     ctx.strokeStyle = "gray";
-//         ctx.moveTo(110, 45);
-//         ctx.lineTo(1270, 45);
-//     ctx.stroke();
-//     //draw lines to separate columns
-//     ctx.beginPath();
-//     ctx.lineWidth = 1;
-//     ctx.strokeStyle = "gray";
-//     ctx.moveTo(320, 10);
-//     ctx.lineTo(320, 590);
-//     ctx.moveTo(450, 10);
-//     ctx.lineTo(450, 590);
-//     ctx.stroke();
+    ctx.fillText("Quantity", 340, 35);
+    ctx.fillText("Description", 470, 35);
+    //draw lines to separate items
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "gray";
+        ctx.moveTo(110, 45);
+        ctx.lineTo(1270, 45);
+    ctx.stroke();
+    //draw lines to separate columns
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "gray";
+    ctx.moveTo(320, 10);
+    ctx.lineTo(320, 590);
+    ctx.moveTo(450, 10);
+    ctx.lineTo(450, 590);
+    ctx.stroke();
 
-//     //set font
+    //set font
 
-//     for (let i = 0; i < items.length; i++) {
-//         ctx.fillText(items[i].name, 150, 70 + 30 * i);
-//         ctx.fillText(items[i].quantity, 380, 70 + 30 * i);
-//         ctx.fillText(items[i].description, 470, 70 + 30 * i);
-//     }
+    for (let i = 0; i < items.length; i++) {
+        ctx.fillText(items[i].name, 150, 70 + 30 * i);
+        ctx.fillText(items[i].quantity, 380, 70 + 30 * i);
+        ctx.fillText(items[i].description, 470, 70 + 30 * i);
+    }
 
-//     //draw arrow pointing to the right on the current item
-//     ctx.beginPath();
-// ctx.fillStyle = 'white';
-// ctx.lineWidth = 1;
-// ctx.moveTo(120 , 50 + 30 * selectedItem); // Punto inicial
-// ctx.lineTo(140 , 60 + 30 * selectedItem); // Punto superior derecho
-// ctx.lineTo(120 , 70 + 30 * selectedItem); // Punto inferior derecho
-// ctx.lineTo(120 , 50+ 30 * selectedItem); // Volver al punto inicial
-// ctx.fill();
+    //draw arrow pointing to the right on the current item
+    ctx.beginPath();
+ctx.fillStyle = 'white';
+ctx.lineWidth = 1;
+ctx.moveTo(120 , 50 + 30 * selectedItem); // Punto inicial
+ctx.lineTo(140 , 60 + 30 * selectedItem); // Punto superior derecho
+ctx.lineTo(120 , 70 + 30 * selectedItem); // Punto inferior derecho
+ctx.lineTo(120 , 50+ 30 * selectedItem); // Volver al punto inicial
+ctx.fill();
 }
 
 export function drawCombatOptions(ctx, currentOption = 0) {
