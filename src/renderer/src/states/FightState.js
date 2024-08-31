@@ -14,6 +14,8 @@ let currentCombatState = combatStates[0];
 let selectedItem = 0;
 let playerItem = "";
 
+let endcombatResolved = false;
+
 let output_messages = [];
 
 const nextStep = () => {
@@ -111,13 +113,6 @@ function createKeyDownHandler(stateMachine, enemy) {
                             playerAction = "item";
                             playerItem = item;
                             console.log("playerItem", playerItem);
-                            // player.items[selectedItem].use(player);
-                            // player.items[selectedItem].quantity--;
-                            // if(player.items[selectedItem].quantity === 0){
-                            //     player.items.splice(selectedItem, 1);
-                            //     selectedItem = 0;
-                            // }
-                            // playerAction = "";
                             nextStep();
                         }
                     }
@@ -134,6 +129,11 @@ function createKeyDownHandler(stateMachine, enemy) {
         }
         if (currentCombatState === 'resolve') {
 
+        }
+        if (currentCombatState === 'endCombat') {
+            if (e.key === 'Enter') {
+                stateMachine.changeState('Playing');
+            }
         }
     };
 }
@@ -170,13 +170,26 @@ const Combat = (stateMachine) => {
             const damage = Math.round(atack_power - random);
             //redondear el daño
             output_messages.push(`You attack the enemy and deal ${damage} damage`);
-            enemy.health -= damage;
-
+            if (enemy.health - damage <= 0) {
+                enemy.health = 0;
+            } else {
+                enemy.health -= damage;
+            }
         }
         if (playerAction === 'item') {
             if (playerItem.type === 'consumable') {
                 let stat = playerItem.stat;
-                player[stat] += playerItem.value;
+                for (let i = 0; i < enemy.experience + enemy.experienceMultiplier * enemy.level; i++) {
+                    if (player[stat] > player[`max_${stat}`]) {
+                        player[stat] = player[`max_${stat}`];
+                    } else {
+                        setTimeout(() => {
+                            player[stat] += 1
+                        }, 50 * i);
+                    }
+
+                }
+                // player[stat] += playerItem.value;
                 if (player[stat] > player[`max_${stat}`]) {
                     player[stat] = player[`max_${stat}`];
                 }
@@ -218,7 +231,8 @@ const Combat = (stateMachine) => {
 
         if (!enemy) return;
         if (enemy.health <= 0) {
-            stateMachine.changeState("Playing");
+            // stateMachine.changeState("Playing");
+            currentCombatState = combatStates[3];
         }
 
         if (currentCombatState === 'selectAction') {
@@ -238,11 +252,20 @@ const Combat = (stateMachine) => {
         if (currentCombatState === 'userInput') {
         }
         if (currentCombatState === 'endCombat') {
-            output_messages.push(`You defeated the enemy!`);
-            //enemy.attack = enemy.attack + enemy.attackMultiplier * enemy.level; 
-            
-            output_messages.push(`You gained ${enemy.experience + enemy.experienceMultiplier * enemy.level} experience points`);
-            player.gainExp(enemy.experience + (enemy.experience * enemy.experienceMultiplier) * enemy.level);
+            if (!endcombatResolved) {
+                output_messages = [];
+                output_messages.push(`You defeated the enemy!`);
+                //enemy.attack = enemy.attack + enemy.attackMultiplier * enemy.level; 
+
+                output_messages.push(`You gained ${enemy.experience + enemy.experienceMultiplier * enemy.level} experience points`);
+                //make the exp bar grow slowly and draw the exp bar
+                for (let i = 0; i < enemy.experience + enemy.experienceMultiplier * enemy.level; i++) {
+                    setTimeout(() => {
+                        player.gainExp(1);
+                    }, 50 * i);
+                }
+                endcombatResolved = true;
+            }
 
         }
     };
@@ -274,6 +297,16 @@ const Combat = (stateMachine) => {
         }
         if (playerAction === 'items') {
             drawItemsBox(ctx, player.items, selectedItem);
+        }
+
+        if (currentCombatState === 'endCombat') {
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            //print output messages
+            for (let i = 0; i < output_messages.length; i++) {
+                ctx.fillText(output_messages[i], 500, 625 + i * 30);
+            }
+            ctx.fillText("Press Enter to continue", 500, 625 + output_messages.length * 30);
         }
     };
 
@@ -320,6 +353,9 @@ const Combat = (stateMachine) => {
         currentPlayerAction = 0;
         playerAction = "";
         currentCombatState = combatStates[0];
+        selectedItem = 0;
+        playerItem = "";
+        endcombatResolved = false;
     }
 
     return {
@@ -329,6 +365,7 @@ const Combat = (stateMachine) => {
             window.addEventListener('keydown', fightKeyDownHandler);
             window.addEventListener('keyup', fightKeyUpHandler);
             audioManagerInstance.play("battle");
+            resetVars();
             //setup enemy
         },
         onExit: () => {

@@ -60,6 +60,6 @@ export const enemies = {
         gold: 5,
         goldMultiplier: 0.2,
         img: exp_lime_tileset,
-        spawn_rate: 0.9,
+        spawn_rate: 0.1,
     }
 }
