@@ -125,7 +125,7 @@ export const mapObjects = {
 export const mapEnemies = {
     ruta1: {
         lvl_range: [1, 3],
-        mobs: ["goblin", "lime"]
+        mobs: ["goblin", "lime", "exp_lime"]
     },
     ruta2:{
         lvl_range: [1, 3],

@@ -129,10 +129,23 @@ class Player {
     }
     // Methods
     gainExp(exp) {
-        this.exp += exp;
-        if (this.exp >= this.exp_to_lvl) {
+        //gain xp, if level up, call lvl up function and then add the rest of the xp
+        const neededExp = this.exp_to_lvl - this.exp;
+        if (exp >= neededExp) {
             this.lvlUp();
+            this.exp = exp - neededExp;
+        } else {
+            this.exp += exp;
         }
+        
+        
+        
+        // this.exp += exp;
+        // if (this.exp >= this.exp_to_lvl) {
+        //     this.lvlUp();
+        // }
+        
+
     }
     lvlUp() {
         this.lvl++;
