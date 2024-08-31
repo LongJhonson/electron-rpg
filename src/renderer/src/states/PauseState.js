@@ -1,8 +1,10 @@
 import player from "../class/Player";
 
 let selectedOptionIndex = 0;
-const menuOptions = ['Resume','Save', 'Load', 'Settings', 'Exit'];
+const menuOptions = ['Resume','Stats', 'Save', 'Load', 'Settings', 'Exit'];
 let keydownHandler = null; // Variable para almacenar la referencia del handler
+
+
 
 const Pause = (stateMachine) => ({
   onEnter: () => {
@@ -59,18 +61,21 @@ function selectMenuOption(index, stateMachine) {
       console.log('Start Game selected');
       stateMachine.changeState('Playing'); // Cambiar al estado de juego
       break;
-      case 1: //save
+      case 1: //stats
+      stateMachine.changeState('Stats')
+      break;
+      case 2: //save
       window.database.updatePlayer(player)
       localStorage.setItem("gameData", btoa(JSON.stringify({map: "map2", x: 5, y: 4})))
       break;
-      case 2: 
+      case 3: 
       console.log("Load game --> ", JSON.parse(atob(localStorage.getItem("gameData"))))
         break;
-    case 3:
+    case 4:
       console.log('Settings selected');
       // Implementar lógica para configuración
       break;
-    case 4:
+    case 5:
       console.log('Exit selected');
       // Implementar lógica para salir del juego
       stateMachine.changeState("MainMenu")

@@ -89,6 +89,8 @@ function isPlayerInFrontOfObject(player, object) {
   const playerGridX = Math.floor(player.x / 32);
   const playerGridY = Math.floor(player.y / 32);
 
+  console.log(object.x, object.y);
+
   // Asumiendo que el jugador tiene una propiedad `direction` que indica hacia dónde está mirando
   // 'up', 'down', 'left', 'right'
   switch (player.direction) {

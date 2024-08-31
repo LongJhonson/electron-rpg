@@ -1,7 +1,7 @@
 export const maps = {
     aux: [],
     map1: [
-        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [8, 6, 7, 8, 8, 8, 8, 7, 6, 8],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -134,8 +134,10 @@ export const mapEnemies = {
 }
 
 export const mapInteractions = {
+    //x -> column, y -> row
     map1:  [
         { x: 2, y: 2, action: (stateMachine) => stateMachine.changeState('Shop') },
+        { x: 2, y: 0, action: (stateMachine) => alert("window") },
       ],
       map2:  [
         { x: 5, y: 7, action: (stateMachine) => stateMachine.changeState('MainMenu') },

@@ -2,6 +2,8 @@ const soldier_tileset_path = '../assets/Texture/sprites/warrior_m.png' // Ruta a
 const soldier_tileset = new Image()
 soldier_tileset.src = soldier_tileset_path
 
+import { items } from "../gameResources/items"
+
 // Tamaño de cada tile en píxeles
 const TILE_SIZE = 32
 const PLAYER_TILE_SIZE = 32
@@ -45,7 +47,7 @@ class Player {
                 "description": "Heals 50 HP",
                 "value": 50,
                 "stat": "hp",
-                "quantity": 5
+                "quantity": 5,
             },
             {
                 "type": "consumable",
