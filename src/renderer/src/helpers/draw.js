@@ -1,3 +1,5 @@
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./globals";
+
 export function drawFightBottomBox(ctx) {
     // dibujar un rectangulo vacio blanco que ocupe la parte inferior de la pantalla
     ctx.fillStyle = 'white';
@@ -103,6 +105,60 @@ ctx.lineTo(140 , 60 + 30 * selectedItem); // Punto superior derecho
 ctx.lineTo(120 , 70 + 30 * selectedItem); // Punto inferior derecho
 ctx.lineTo(120 , 50+ 30 * selectedItem); // Volver al punto inicial
 ctx.fill();
+}
+
+export function drawShop(ctx, items, selectedItem = 0) {
+    ctx.font = "20px Arial";
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "white";
+    ctx.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.stroke();
+    //fill the box with light gray
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    //draw the items
+    ctx.fillStyle = 'white';
+    ctx.fillText("Items", 150, 35);
+//     ctx.fillText("Quantity", 340, 35);
+//     ctx.fillText("Description", 470, 35);
+//     //draw lines to separate items
+//     ctx.beginPath();
+//     ctx.lineWidth = 1;
+//     ctx.strokeStyle = "gray";
+//         ctx.moveTo(110, 45);
+//         ctx.lineTo(1270, 45);
+//     ctx.stroke();
+//     //draw lines to separate columns
+//     ctx.beginPath();
+//     ctx.lineWidth = 1;
+//     ctx.strokeStyle = "gray";
+//     ctx.moveTo(320, 10);
+//     ctx.lineTo(320, 590);
+//     ctx.moveTo(450, 10);
+//     ctx.lineTo(450, 590);
+//     ctx.stroke();
+
+//     //set font
+
+//     for (let i = 0; i < items.length; i++) {
+//         ctx.fillText(items[i].name, 150, 70 + 30 * i);
+//         ctx.fillText(items[i].quantity, 380, 70 + 30 * i);
+//         ctx.fillText(items[i].description, 470, 70 + 30 * i);
+//     }
+
+//     //draw arrow pointing to the right on the current item
+//     ctx.beginPath();
+// ctx.fillStyle = 'white';
+// ctx.lineWidth = 1;
+// ctx.moveTo(120 , 50 + 30 * selectedItem); // Punto inicial
+// ctx.lineTo(140 , 60 + 30 * selectedItem); // Punto superior derecho
+// ctx.lineTo(120 , 70 + 30 * selectedItem); // Punto inferior derecho
+// ctx.lineTo(120 , 50+ 30 * selectedItem); // Volver al punto inicial
+// ctx.fill();
 }
 
 export function drawCombatOptions(ctx, currentOption = 0) {

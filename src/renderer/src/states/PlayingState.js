@@ -1,12 +1,9 @@
+import { TILE_SIZE, PLAYER_TILE_SIZE } from '../helpers/globals.js'
 import { maps, mapObjects, mapAudio, mapInteractions } from '../maps/map1'
 import { transitions } from '../maps/transitions'
 import { tiles, objects } from '../maps/tiles.js'
 import audioManagerInstance from '../class/AudioManager.js'
 import player from '../class/Player.js'
-
-// Tamaño de cada tile en píxeles
-const TILE_SIZE = 32
-const PLAYER_TILE_SIZE = 32
 
 
 const soldier_tileset_path = '../assets/Texture/sprites/warrior_m.png' // Ruta a tu tileset

@@ -1,3 +1,9 @@
+import { items } from "../gameResources/items";
+import player from "../class/Player";
+import { drawItemsBox, drawShop } from "../helpers/draw";
+
+const shopOptions = ["Buy", "Sell", "Exit"];
+
 let keyupHandler = null; // Variable para almacenar la referencia del handler
 let keysPressed = {}; // Mapa para almacenar el estado de las teclas
 
@@ -9,11 +15,21 @@ const ShopState = (stateMachine) => ({
     },
     onUpdate: () => { /* Manejar compras */ },
     onRender: (ctx) => { 
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, 800, 600);
-        ctx.fillStyle = 'white';
-        ctx.font = '30px Arial';
-        ctx.fillText('Tienda', 10, 40);
+        // ctx.fillStyle = 'black';
+        // ctx.fillRect(0, 0, 800, 600);
+        // ctx.fillStyle = 'white';
+        // ctx.font = '30px Arial';
+        // ctx.fillText('Tienda', 10, 40);
+        // const yourGold = player.gold;
+        // ctx.fillText(`Oro: ${yourGold}G`, 10, 70);
+
+        // // Dibujar los items
+        // let y = 100;
+        // for (const [key, item] of Object.entries(items)) {
+        //     ctx.fillText(`${item.name}: ${item.cost}G`, 10, y);
+        //     y += 30;
+        // }
+        drawShop(ctx, items);
     },
     onExit: () => {
         // Elimina los listeners de teclas
