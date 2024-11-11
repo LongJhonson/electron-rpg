@@ -1,5 +1,7 @@
 console.log("RPG v0.1 working")
 
+import { FPS, FRAME_DURATION } from './helpers/globals.js';
+
 import StateMachine from './class/StateMachine.js';
 import createMainMenu from './states/MainMenuState.js';
 import createSettingsState from './states/SettingsState.js';
@@ -31,12 +33,7 @@ stateMachine.addState('Fight', FightState);
 stateMachine.addState('Shop', ShopState);
 stateMachine.addState('Stats', StatsState);
 
-//audio
-const mainMenuMusic = new Audio('../assets/audio/main_menu.mp3');
-// mainMenuMusic.play();
 
-const FPS = 30;
-const FRAME_DURATION = 1000 / FPS;
 let lastTime = 0;
 
 function gameLoop(timestamp) {

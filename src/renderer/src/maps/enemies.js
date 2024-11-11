@@ -10,6 +10,7 @@ const exp_lime_tileset_path = '../assets/Texture/sprites/healer_m.png' // Ruta a
 const exp_lime_tileset = new Image()
 exp_lime_tileset.src = exp_lime_tileset_path
 
+
 export const enemies = {
     goblin: {
         name: 'Goblin',
